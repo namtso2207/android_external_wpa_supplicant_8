@@ -675,4 +675,7 @@ int wpa_pasn_parse_parameter_ie(const u8 *data, u8 len, bool from_ap,
 
 void wpa_pasn_add_rsnxe(struct wpabuf *buf, u16 capab);
 
+static char wifi_type[64] = {0};
+extern int check_wifi_chip_type_string(char *type);
+
 #endif /* WPA_COMMON_H */

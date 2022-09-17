@@ -2023,7 +2023,7 @@ ndk::ScopedAStatus P2pIface::setMacRandomizationInternal(bool enable)
 		if (wpas_p2p_mac_setup(wpa_s) < 0) {
 			wpa_s->conf->p2p_device_random_mac_addr = 0;
 			wpa_s->conf->p2p_interface_random_mac_addr = 0;
-			return createStatusWithMsg(SupplicantStatusCode::FAILURE_UNKNOWN,
+			return createStatusWithMsg(SupplicantStatusCode::FAILURE_ARGS_INVALID,
 				"Failed to set up MAC address.");
 		}
 	} else {

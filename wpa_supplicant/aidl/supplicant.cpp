@@ -23,22 +23,26 @@ namespace {
 constexpr char kIfaceDriverName[] = "nl80211";
 constexpr char kStaIfaceConfPath[] =
 	"/data/vendor/wifi/wpa/wpa_supplicant.conf";
-static const char* kStaIfaceConfOverlayPaths[] = {
-    "/apex/com.android.wifi.hal/etc/wifi/wpa_supplicant_overlay.conf",
-    "/vendor/etc/wifi/wpa_supplicant_overlay.conf",
-};
+constexpr char kStaIfaceConfOverlayPath[] =
+	"/vendor/etc/wifi/wpa_supplicant_overlay.conf";
+constexpr char kRtkStaIfaceConfOverlayPath[] =
+	"/vendor/etc/wifi/wpa_supplicant_rtk.conf";
 constexpr char kP2pIfaceConfPath[] =
 	"/data/vendor/wifi/wpa/p2p_supplicant.conf";
-static const char* kP2pIfaceConfOverlayPaths[] = {
-    "/apex/com.android.wifi.hal/etc/wifi/p2p_supplicant_overlay.conf",
-    "/vendor/etc/wifi/p2p_supplicant_overlay.conf",
-};
+constexpr char kP2pIfaceConfOverlayPath[] =
+	"/vendor/etc/wifi/p2p_supplicant_overlay.conf";
+constexpr char kRtkP2pIfaceConfOverlayPath[] =
+	"/vendor/etc/wifi/p2p_supplicant_rtk.conf";
 // Migrate conf files for existing devices.
 static const char* kTemplateConfPaths[] = {
     "/apex/com.android.wifi.hal/etc/wifi/wpa_supplicant.conf",
     "/vendor/etc/wifi/wpa_supplicant.conf",
     "/system/etc/wifi/wpa_supplicant.conf",
 };
+
+static char wpa_conf_overlay_path[64];
+static char p2p_conf_overlay_path[64];
+
 constexpr char kOldStaIfaceConfPath[] = "/data/misc/wifi/wpa_supplicant.conf";
 constexpr char kOldP2pIfaceConfPath[] = "/data/misc/wifi/p2p_supplicant.conf";
 constexpr mode_t kConfigFileMode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP;
@@ -341,11 +345,19 @@ Supplicant::addP2pInterfaceInternal(const std::string& name)
 			SupplicantStatusCode::FAILURE_UNKNOWN, "Conf file does not exist")};
 	}
 	iface_params.confname = kP2pIfaceConfPath;
-	const char* path = resolvePath(
-		    kP2pIfaceConfOverlayPaths,
-		    sizeof(kP2pIfaceConfOverlayPaths)/sizeof(kP2pIfaceConfOverlayPaths[0]));
-	if (path != nullptr) {
-		iface_params.confanother = path;
+	if (wifi_type[0] == 0) {
+		check_wifi_chip_type_string(wifi_type);
+	}
+	if (0 == strncmp(wifi_type, "RTL", 3)) {
+		strcpy(p2p_conf_overlay_path, kRtkP2pIfaceConfOverlayPath);
+	} else {
+		strcpy(p2p_conf_overlay_path, kP2pIfaceConfOverlayPath);
+	}
+	int ret = access(p2p_conf_overlay_path, R_OK);
+	wpa_printf(MSG_INFO, "p2p_overlay: %s, read %s.\n", p2p_conf_overlay_path,
+			(ret == 0) ? "ok" : "fail");
+	if (ret == 0) {
+		iface_params.confanother = p2p_conf_overlay_path;
 	}
 
 	iface_params.ifname = name.c_str();
@@ -401,11 +413,19 @@ Supplicant::addStaInterfaceInternal(const std::string& name)
 			SupplicantStatusCode::FAILURE_UNKNOWN, "Conf file does not exist")};
 	}
 	iface_params.confname = kStaIfaceConfPath;
-	const char* path = resolvePath(
-		    kStaIfaceConfOverlayPaths,
-		    sizeof(kStaIfaceConfOverlayPaths)/sizeof(kStaIfaceConfOverlayPaths[0]));
-	if (path != nullptr) {
-		iface_params.confanother = path;
+	if (wifi_type[0] == 0) {
+		check_wifi_chip_type_string(wifi_type);
+	}
+	if (0 == strncmp(wifi_type, "RTL", 3)) {
+		strcpy(wpa_conf_overlay_path, kRtkStaIfaceConfOverlayPath);
+	} else {
+		strcpy(wpa_conf_overlay_path, kStaIfaceConfOverlayPath);
+	}
+	int ret = access(wpa_conf_overlay_path, R_OK);
+	wpa_printf(MSG_INFO, "wpa_overlay: %s, read %s.\n", wpa_conf_overlay_path,
+			(ret == 0) ? "ok" : "fail");
+	if (ret == 0) {
+		iface_params.confanother = wpa_conf_overlay_path;
 	}
 
 	iface_params.ifname = name.c_str();
