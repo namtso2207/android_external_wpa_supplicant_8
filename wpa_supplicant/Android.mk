@@ -16,6 +16,8 @@ endif
 
 ifeq ($(BOARD_WLAN_DEVICE), qcwcn)
   CONFIG_DRIVER_NL80211_QCA=y
+else
+  CONFIG_DRIVER_NL80211_BRCM=y
 endif
 
 include $(LOCAL_PATH)/android.config
