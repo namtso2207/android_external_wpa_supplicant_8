@@ -43,8 +43,8 @@ static const char* kTemplateConfPaths[] = {
 static char wpa_conf_overlay_path[64];
 static char p2p_conf_overlay_path[64];
 
-constexpr char kOldStaIfaceConfPath[] = "/data/misc/wifi/wpa_supplicant.conf";
-constexpr char kOldP2pIfaceConfPath[] = "/data/misc/wifi/p2p_supplicant.conf";
+constexpr char kOldStaIfaceConfPath[] = "/vendor/etc/wifi/wpa_supplicant.conf";
+constexpr char kOldP2pIfaceConfPath[] = "/vendor/etc/wifi/p2p_supplicant.conf";
 constexpr mode_t kConfigFileMode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP;
 
 const char* resolvePath(const char* paths[], size_t size)
