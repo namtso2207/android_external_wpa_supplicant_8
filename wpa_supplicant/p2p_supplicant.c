@@ -5978,7 +5978,7 @@ int wpas_p2p_connect(struct wpa_supplicant *wpa_s, const u8 *peer_addr,
 	wpa_s->global->pending_p2ps_group_freq = 0;
 	wpa_s->p2ps_method_config_any = 0;
 
-	if (go_intent < 0)
+	//if (go_intent < 0)
 		go_intent = wpa_s->conf->p2p_go_intent;
 
 	if (!auth)
